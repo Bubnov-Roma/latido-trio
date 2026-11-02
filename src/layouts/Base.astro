@@ -1,0 +1,139 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+import Logo from '../components/Logo.astro'
+import Player from '../components/Player.astro'
+
+interface Props {
+  title?: string;
+}
+const { title = 'Latido Trio' } = Astro.props;
+
+const allTracks = await getCollection('tracks');
+const tracks = allTracks.sort((a, b) => a.data.order - b.data.order);
+
+const nav = [
+  { href: '/', label: 'Главная' },
+  { href: '/bio', label: 'О нас' },
+  { href: '/#shows', label: 'Концерты' },
+  { href: '/media', label: 'Медиа' },
+  { href: '/news', label: 'Новости' },
+  { href: '/contacts', label: 'Контакты' },
+];
+
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? currentPath === '/' : currentPath.startsWith(href.split('#')[0]) && href !== '/#shows';
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content="Официальный сайт группы Latido Trio" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#2B2B2A" />
+    <ClientRouter />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-left">
+        <a href="/" class="brand">
+          <Logo variant="vertical" size="3rem" />
+        </a>
+      </div>
+
+      <nav class="desktop-nav">
+        {nav.map((item) => (
+          <a href={item.href} class={isActive(item.href) ? 'active' : ''}>{item.label}</a>
+        ))}
+      </nav>
+
+      <div class="header-actions">
+        <a href="/contacts" class="btn btn-outline header-cta">Пригласить нас</a>
+        <button
+          class="icon-btn burger"
+          id="menu-toggle"
+          aria-label="Открыть меню"
+          aria-expanded="false"
+          aria-controls="drawer"
+        >
+          <span class="menu-line l1"></span>
+          <span class="menu-line l2"></span>
+        </button>
+      </div>
+    </header>
+
+    <Player tracks={tracks} />
+
+    <div class="scrim" id="scrim" aria-hidden="true"></div>
+
+    <aside class="drawer" id="drawer" aria-label="Основная навигация">
+      <button class="icon-btn drawer-close" id="menu-close" aria-label="Закрыть меню">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+
+      <Logo variant='vertical' class="drawer-brand" size="8rem" />
+
+      <nav class="drawer-nav">
+        {nav.map((item) => (
+          <a href={item.href} class={isActive(item.href) ? 'active' : ''}>{item.label}</a>
+        ))}
+      </nav>
+
+      <div class="drawer-lang">
+        <a href="#" class="active" hreflang="ru">RU</a>
+        <a href="#" hreflang="en">EN</a>
+      </div>
+
+      <div class="drawer-dots" aria-hidden="true"></div>
+    </aside>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <div class="container">
+        © {new Date().getFullYear()} Latido Trio · <a href="/admin">Панель управления</a>
+      </div>
+    </footer>
+
+    <script>
+      const body = document.body;
+      const toggle = document.getElementById('menu-toggle');
+      const closeBtn = document.getElementById('menu-close');
+      const scrim = document.getElementById('scrim');
+
+      const setMenu = (open: boolean) => {
+        body.classList.toggle('menu-open', open);
+        toggle?.setAttribute('aria-expanded', String(open));
+        toggle?.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+      };
+
+      toggle?.addEventListener('click', () => setMenu(!body.classList.contains('menu-open')));
+      closeBtn?.addEventListener('click', () => setMenu(false));
+      scrim?.addEventListener('click', () => setMenu(false));
+
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setMenu(false);
+      });
+      document.querySelectorAll('.drawer-nav a').forEach((a) => {
+        a.addEventListener('click', () => setMenu(false));
+      });
+    </script>
+  </body>
+</html>

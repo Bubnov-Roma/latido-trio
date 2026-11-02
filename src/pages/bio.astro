@@ -1,0 +1,146 @@
+---
+import { getCollection, getEntry, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import fs from 'node:fs';
+
+const bio = await getEntry('pages', 'bio');
+if (!bio) {
+  return Astro.redirect('/404');
+}
+const { Content } = await render(bio);
+
+const members = await getCollection('members');
+const withContent = await Promise.all(
+  members
+    .slice()
+    .sort((a, b) => a.data.order - b.data.order)
+    .map(async (m) => ({ ...m, Content: (await render(m)).Content }))
+);
+
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .map((w) => w[0] ?? '')
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+const heroVars: string[] = [];
+const addHeroImage = (varName: string, file: string) => {
+  if (fs.existsSync(`public/uploads/img/${file}`)) {
+    heroVars.push(`--${varName}: url('/uploads/img/${file}')`);
+  }
+};
+addHeroImage('hero-image', 'band.jpg');
+const heroStyle = [...heroVars, '--hero-image-position: center'].join('; ');
+---
+
+<Base title="О нас — Latido Trio">
+  <script is:inline>document.documentElement.classList.add('js');</script>
+
+  <section class="hero" style={heroStyle}>
+    <div class="hero-content">
+      <h1>{bio.data.title}</h1>
+    </div>
+  </section>
+
+  <div class="container bio-page-container">
+    <section class="prose bio-story">
+      <Content />
+    </section>
+
+    {withContent.length > 0 && (
+      <section class="band-section">
+        <div class="band-heading">
+          <h2 >Состав</h2>
+          <p class="band-sub">Три стихии в одном ансамбле</p>
+        </div>
+
+        <div class="member-rows">
+          {withContent.map((m, i) => (
+            <article class:list={['member-row', i % 2 === 1 && 'member-row--flip']}>
+              <div class="member-media">
+                <span class="member-index" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                {m.data.photo ? (
+                  <img
+                    class="member-photo"
+                    src={m.data.photo}
+                    alt={m.data.name}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                ) : (
+                  <div class="member-photo member-photo-empty" aria-hidden="true">
+                    {initials(m.data.name)}
+                  </div>
+                )}
+              </div>
+
+              <div class="member-info">
+                <h3 class="member-name">{m.data.name}</h3>
+                <span class="member-role">{m.data.role}</span>
+                {m.data.quote && (
+                  <blockquote class="member-quote">«{m.data.quote}»</blockquote>
+                )}
+                {m.body?.trim() !== '' && (
+                  <div class="member-bio">
+                    <m.Content />
+                  </div>
+                )}
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <section class="band-cta">
+      <p>Хотите, чтобы ваше мероприятие загорелось настоящим музыкальным огнём?</p>
+      <a href="/contacts" class="btn">Связаться с нами</a>
+    </section>
+  </div>
+
+  <script>
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          io.unobserve(entry.target);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => entry.target.classList.add('is-visible'));
+          });
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -5% 0px' }
+    );
+    document.querySelectorAll('.member-row').forEach((el) => io.observe(el));
+  </script>
+</Base>
+
+<style>
+  .bio-page-container {
+    padding-top: 4rem;
+    padding-bottom: 5rem;
+  }
+  .bio-story {
+    max-width: 720px;
+    margin: 0 auto 5rem;
+    font-size: 1.1rem;
+    line-height: 1.8;
+  }
+  .bio-story p + p {
+    margin-top: 1.25rem;
+  }
+  .band-section {
+    margin-top: 6rem;
+  }
+  .band-section .band-head {
+    margin-bottom: 4rem;
+    text-align: center;
+  }
+  .band-section .band-head .section-title {
+    font-size: clamp(2.2rem, 4vw, 3rem);
+  }
+</style>

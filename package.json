@@ -1,0 +1,18 @@
+{
+  "name": "latido-trio",
+  "type": "module",
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview"
+  },
+  "dependencies": {
+    "@fontsource/manrope": "^5.3.0",
+    "@fontsource/yeseva-one": "^5.3.0",
+    "astro": "^7.4.2"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6"
+  }
+}

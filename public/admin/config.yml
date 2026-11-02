@@ -1,0 +1,99 @@
+# Конфигурация Decap CMS — панель управления для клиента
+# Документация: https://decapcms.org/docs/intro/
+
+backend:
+  name: github
+  repo: YOUR_GITHUB_LOGIN/band-site   # <-- поменять
+  branch: main
+
+# Русский интерфейс
+locale: ru
+
+# Медиафайлы грузятся в public/uploads и публикуются с пути /uploads
+media_folder: public/uploads
+public_folder: /uploads
+
+# Открывать редактор сразу на списке афиш
+collections:
+  - name: shows
+    label: 🎫 Афиша
+    folder: src/content/shows
+    create: true
+    slug: "{{date}}-{{slug}}"
+    sortable_fields: [date]
+    fields:
+      - { label: "Название", name: title, widget: string, required: false }
+      - { label: "Дата и время", name: date, widget: datetime, required: true }
+      - { label: "Город", name: city, widget: string }
+      - { label: "Площадка", name: venue, widget: string, required: false }
+      - { label: "Ссылка на билеты", name: ticketUrl, widget: string, required: false }
+      - { label: "Афиша (картинка)", name: poster, widget: image, required: false }
+      - label: "Статус"
+        name: status
+        widget: select
+        options:
+          - { label: "Анонсирован", value: announced }
+          - { label: "Sold out", value: soldout }
+          - { label: "Отменён", value: cancelled }
+        default: announced
+      - { label: "Описание", name: body, widget: markdown, required: false }
+
+  - name: pages
+    label: 📄 Страницы (тексты)
+    folder: src/content/pages
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { label: "Заголовок", name: title, widget: string }
+      - { label: "Текст страницы", name: body, widget: markdown }
+
+  - name: news
+    label: 📰 Новости
+    folder: src/content/news
+    create: true
+    slug: "{{year}}-{{month}}-{{day}}-{{slug}}"
+    sortable_fields: [date]
+    fields:
+      - { label: "Заголовок", name: title, widget: string }
+      - { label: "Дата", name: date, widget: datetime }
+      - { label: "Обложка", name: cover, widget: image, required: false }
+      - { label: "Текст", name: body, widget: markdown }
+
+  # Документы (техрайдер и пр.) — просто загрузка файлов в public/docs
+  - name: docs
+    label: 📎 Документы (техрайдер и пр.)
+    files:
+      - name: rider
+        label: "Техрайдер"
+        file: "public/docs/rider.md"   # через files-коллекцию можно править и текст документа
+        fields:
+          - { label: "Название", name: title, widget: string }
+          - { label: "Содержимое / ссылка на PDF", name: body, widget: markdown }
+  - name: 'members'
+    label: 'Состав'
+    folder: 'src/content/members'
+    create: true
+    fields:
+      - { label: 'Имя', name: 'name', widget: 'string' }
+      - { label: 'Роль', name: 'role', widget: 'string' }
+      - { label: 'Порядок', name: 'order', widget: 'number', value_type: 'int' }
+      - { label: 'Фото', name: 'photo', widget: 'image', required: false }
+      - { label: 'Текст', name: 'body', widget: 'markdown' }
+      - { label: 'Цитата', name: 'quote', widget: 'string', required: false }
+      - { label: 'Фото для главной', name: 'photoHome', widget: 'image', required: false }
+  - name: contacts
+    label: 📞 Контакты (страница)
+    files:
+      - name: page
+        label: "Страница контактов"
+        file: "src/content/contacts.md"
+        fields:
+          - { label: "Заголовок", name: title, widget: string }
+          - { label: "Подзаголовок", name: subtitle, widget: string, required: false }
+          - { label: "E-mail букинга", name: bookingEmail, widget: string, required: false }
+          - { label: "Телефон букинга", name: bookingPhone, widget: string, required: false }
+          - { label: "E-mail прессы", name: pressEmail, widget: string, required: false }
+          - { label: "Техрайдер (ссылка на файл)", name: riderUrl, widget: string, required: false }
+          - { label: "Пресс-кит (ссылка)", name: pressKitUrl, widget: string, required: false }
+          - { label: "Коммерческое предложение (ссылка)", name: offerUrl, widget: string, required: false }
+          - { label: "Фото справа", name: photo, widget: image, required: false }

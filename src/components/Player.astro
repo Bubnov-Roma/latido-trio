@@ -1,0 +1,176 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  tracks: CollectionEntry<'tracks'>[];
+}
+const { tracks } = Astro.props;
+
+const playlist = tracks.map((track) => ({
+  title: track.data.title,
+  src: track.data.audioFile,
+  cover: track.data.cover?.src || null,
+}));
+---
+
+<div class="global-player-wrapper" id="global-player" transition:persist="global-player">
+  <audio id="player-audio" preload="none"></audio>
+
+  <button class="header-play-trigger p-play" id="p-play" aria-label="Воспроизвести">
+    <svg class="ic-play" viewBox="0 0 24 24" width="25" height="25" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+    <svg class="ic-pause" viewBox="0 0 24 24" width="25" height="25" fill="currentColor" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+  </button>
+
+  <div class="header-player-panel" id="player-panel">
+    
+    <div class="panel-meta">
+      <div class="panel-track-info">
+        <div class="panel-title-wrapper" id="title-wrapper">
+          <span class="panel-title" id="p-title">Выберите трек</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-controls">
+      <button class="panel-btn panel-skip-btn" id="p-prev" aria-label="Предыдущий трек">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M6 6h2v12H6zM20 6l-9 6 9 6z"/></svg>
+      </button>
+      
+      <button class="panel-btn panel-btn-main p-play" id="p-play-inner" aria-label="Играть / пауза">
+        <div class="btn-cover-overlay" id="btn-cover-overlay"></div>
+        <svg class="ic-play" viewBox="0 0 24 24" width="30" height="30"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="ic-pause" viewBox="0 0 24 24" width="30" height="30" style="display:none"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+
+      <button class="panel-btn panel-skip-btn" id="p-next" aria-label="Следующий трек">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M16 6h2v12h-2zM4 6l9 6-9 6z"/></svg>
+      </button>
+    </div>
+
+    <button class="panel-close" id="p-dismiss" aria-label="Свернуть плеер">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+  </div>
+
+  <script type="application/json" id="playlist-data" set:html={JSON.stringify(playlist)}></script>
+</div>
+
+<script>
+  interface TrackItem {
+    title: string;
+    src: string;
+    cover: string | null;
+  }
+
+  const player = document.getElementById('global-player') as HTMLDivElement | null;
+
+  if (player && !player.dataset.init) {
+    player.dataset.init = '1';
+
+    const audio = player.querySelector('#player-audio') as HTMLAudioElement | null;
+    const playButtons = player.querySelectorAll('.p-play') as NodeListOf<HTMLButtonElement>;
+    const btnPrev = player.querySelector('#p-prev') as HTMLButtonElement | null;
+    const btnNext = player.querySelector('#p-next') as HTMLButtonElement | null;
+    const btnDismiss = player.querySelector('#p-dismiss') as HTMLButtonElement | null;
+    const playerPanel = player.querySelector('#player-panel') as HTMLDivElement | null;
+    
+    const titleEl = player.querySelector('#p-title') as HTMLSpanElement | null;
+    const titleWrapper = player.querySelector('#title-wrapper') as HTMLDivElement | null;
+    const coverOverlay = player.querySelector('#btn-cover-overlay') as HTMLDivElement | null;
+
+    const playlistDataEl = player.querySelector('#playlist-data');
+    const playlist: TrackItem[] = playlistDataEl?.textContent ? JSON.parse(playlistDataEl.textContent) : [];
+    
+    let index = -1;
+
+    const openPanel = () => {
+      playerPanel?.classList.add('is-expanded');
+      player?.classList.add('is-active');
+    };
+
+    const closePanel = () => {
+      playerPanel?.classList.remove('is-expanded');
+      player?.classList.remove('is-active');
+      if (audio) audio.pause();
+    };
+
+    const load = (i: number, autoplay = false) => {
+      if (!playlist.length || !audio || !titleEl || !coverOverlay) return;
+      index = (i + playlist.length) % playlist.length;
+      audio.src = playlist[index].src;
+      titleEl.textContent = playlist[index].title;
+
+      const currentCover = playlist[index].cover;
+      if (currentCover) {
+        coverOverlay.style.backgroundImage = `url('${currentCover}')`;
+        coverOverlay.style.backgroundColor = 'transparent';
+      } else {
+        coverOverlay.style.backgroundImage = 'none';
+        coverOverlay.style.backgroundColor = 'var(--primary-container)';
+      }
+
+      setTimeout(() => {
+        if (titleWrapper && titleEl) {
+          if (titleEl.scrollWidth > titleWrapper.clientWidth) {
+            titleEl.classList.add('marquee');
+          } else {
+            titleEl.classList.remove('marquee');
+          }
+        }
+      }, 50);
+
+      openPanel();
+      if (autoplay) audio.play().catch(() => {});
+    };
+
+    const toggle = () => {
+      if (!audio) return;
+      if (index === -1) load(0, true);
+      else if (audio.paused) audio.play().catch(() => {});
+      else audio.pause();
+    };
+
+    playButtons.forEach(btn => btn.addEventListener('click', toggle));
+    btnPrev?.addEventListener('click', () => load(index - 1 < 0 ? playlist.length - 1 : index - 1, true));
+    btnNext?.addEventListener('click', () => load(index + 1, true));
+    btnDismiss?.addEventListener('click', closePanel);
+
+    audio?.addEventListener('play', () => {
+      playButtons.forEach(btn => {
+        const p = btn.querySelector('.ic-play') as HTMLElement;
+        const s = btn.querySelector('.ic-pause') as HTMLElement;
+        if (p) p.style.display = 'none';
+        if (s) s.style.display = '';
+      });
+      openPanel();
+    });
+
+    audio?.addEventListener('pause', () => {
+      playButtons.forEach(btn => {
+        const p = btn.querySelector('.ic-play') as HTMLElement;
+        const s = btn.querySelector('.ic-pause') as HTMLElement;
+        if (p) p.style.display = '';
+        if (s) s.style.display = 'none';
+      });
+    });
+
+    audio?.addEventListener('ended', () => load(index + 1, true));
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement | null;
+      if (!target) return;
+      const btn = target.closest('[data-play-track]') as HTMLButtonElement | null;
+      if (!btn) return;
+      e.preventDefault();
+      load(Number(btn.dataset.playTrack), true);
+    });
+
+    audio?.addEventListener('play', () => {
+      document.querySelectorAll('[data-play-track]').forEach((b) => {
+        const htmlBtn = b as HTMLButtonElement;
+        const isCurrent = Number(htmlBtn.dataset.playTrack) === index;
+        htmlBtn.classList.toggle('is-playing', isCurrent);
+      });
+    });
+  }
+</script>

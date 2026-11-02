@@ -1,0 +1,77 @@
+---
+import { getEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import '../styles/contacts.css';
+
+const contacts = await getEntry('contacts', 'contacts');
+if (!contacts) {
+  return Astro.redirect('/404');
+}
+
+const c = contacts.data;
+const photo = c.photo || '/uploads/img/hero.jpg';
+
+const docs = [
+  { label: 'Техрайдер', url: c.riderUrl },
+  { label: 'Пресс-кит', url: c.pressKitUrl },
+  { label: 'Коммерческое предложение', url: c.offerUrl },
+].filter((d) => d.url && d.url.length > 0);
+---
+
+<Base title={c.title}>
+  <section class="contacts-page">
+    <div class="container contacts-inner">
+      <div class="contacts-info">
+        <h1 class="contacts-title">{c.title}</h1>
+        {c.subtitle && <p class="contacts-sub">{c.subtitle}</p>}
+
+        {(c.bookingEmail || c.bookingPhone) && (
+          <div class="contacts-block">
+            <span class="contacts-label">Букинг</span>
+            {c.bookingEmail && (
+              <a class="contacts-value" href={`mailto:${c.bookingEmail}`}>{c.bookingEmail}</a>
+            )}
+            {c.bookingPhone && (
+              <a class="contacts-value" href={`tel:${c.bookingPhone.replace(/[^+\d]/g, '')}`}>
+                {c.bookingPhone}
+              </a>
+            )}
+          </div>
+        )}
+
+        {c.pressEmail && (
+          <div class="contacts-block">
+            <span class="contacts-label">Пресса</span>
+            <a class="contacts-value" href={`mailto:${c.pressEmail}`}>{c.pressEmail}</a>
+          </div>
+        )}
+
+        {docs.length > 0 && (
+          <div class="contacts-docs">
+            {docs.map((d) => (
+              <a class="contacts-doc-btn" href={d.url} target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16"/>
+                </svg>
+                {d.label}
+              </a>
+            ))}
+          </div>
+        )}
+
+        <div class="contacts-socials">
+          <a href="#" rel="noopener">VK</a>
+          <a href="#" rel="noopener">Telegram</a>
+          <a href="#" rel="noopener">YouTube</a>
+          <a href="#" rel="noopener">Spotify</a>
+        </div>
+      </div>
+
+      <div class="contacts-photo">
+        <img src={photo} alt="Latido Trio" loading="eager" decoding="async" />
+      </div>
+    </div>
+
+    <div class="contacts-dots" aria-hidden="true"></div>
+  </section>
+</Base>

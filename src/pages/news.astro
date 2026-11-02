@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const allNews = (await getCollection('news')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+
+<Base title="Новости">
+  <div class="container" style="padding-top: 6rem">
+    <h1 class="section-title">Новости</h1>
+    <div class="news-grid">
+      {allNews.map((item) => (
+        <article class="news-card card">
+          {item.data.cover && <img src={item.data.cover.src} alt={item.data.title} />}
+          <div class="pad">
+            <time datetime={item.data.date.toISOString()}>
+              {item.data.date.toLocaleDateString('ru-RU')}
+            </time>
+            <h3>{item.data.title}</h3>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</Base>
