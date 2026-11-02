@@ -1,4 +1,4 @@
-# Сайт музыкального коллектива (Astro + Decap CMS + Cloudflare Pages)
+# Сайт музыкального коллектива Latido Trio (Astro + Decap CMS + GitHub Pages)
 
 ## Что внутри
 

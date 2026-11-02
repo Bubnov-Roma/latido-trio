@@ -1,0 +1,47 @@
+/* ============ Страница 404 ============ */
+.nf-page {
+  min-height: calc(100svh - 72px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: calc(72px + 2rem) 1.25rem 3rem;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--bg) 42%, transparent) 0%,
+      var(--bg) 100%
+    ),
+    var(--nf-img);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+.nf-inner { max-width: 560px; }
+
+.nf-code {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(6rem, 18vw, 8rem);
+  line-height: 1;
+  color: var(--primary);
+  -webkit-text-stroke: 1.5px var(--primary);
+  user-select: none;
+}
+.nf-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+  margin-top: 1rem;
+}
+.nf-text {
+  margin-top: 1rem;
+  color: var(--on-surface-variant);
+}
+.nf-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 2.2rem;
+}

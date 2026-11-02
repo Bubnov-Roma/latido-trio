@@ -3,19 +3,24 @@ import { getEntry } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import '../styles/contacts.css';
 
+
+const _base = import.meta.env.BASE_URL;
+const base = _base.endsWith('/') ? _base : _base + '/';
+const url = (p: string) => (p.startsWith('/') ? base + p.slice(1) : p);
+
 const contacts = await getEntry('contacts', 'contacts');
 if (!contacts) {
-  return Astro.redirect('/404');
+  return Astro.redirect(url('/404'));
 }
-
 const c = contacts.data;
-const photo = c.photo || '/uploads/img/hero.jpg';
+const photo = url(c.photo || '/uploads/img/hero.jpg');
 
 const docs = [
   { label: 'Техрайдер', url: c.riderUrl },
   { label: 'Пресс-кит', url: c.pressKitUrl },
   { label: 'Коммерческое предложение', url: c.offerUrl },
-].filter((d) => d.url && d.url.length > 0);
+].filter((d): d is { label: string; url: string } => Boolean(d.url && d.url.length > 0))
+ .map((d) => ({ ...d, url: url(d.url) })); 
 ---
 
 <Base title={c.title}>

@@ -5,11 +5,14 @@ interface Props {
   tracks: CollectionEntry<'tracks'>[];
 }
 const { tracks } = Astro.props;
+const _base = import.meta.env.BASE_URL;
+const base = _base.endsWith('/') ? _base : _base + '/';
+const url = (p: string) => (p.startsWith('/') ? base + p.slice(1) : p);
 
 const playlist = tracks.map((track) => ({
   title: track.data.title,
-  src: track.data.audioFile,
-  cover: track.data.cover?.src || null,
+  src: url(track.data.audioFile),
+  cover: track.data.cover ? url(track.data.cover.src) : null,
 }));
 ---
 

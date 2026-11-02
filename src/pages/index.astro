@@ -4,6 +4,10 @@ import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
 
+const _base = import.meta.env.BASE_URL;
+const base = _base.endsWith('/') ? _base : _base + '/';
+const url = (p: string) => (p.startsWith('/') ? base + p.slice(1) : p);
+
 const now = new Date();
 const upcoming = (await getCollection('shows'))
   .filter((s) => s.data.date >= now && s.data.status !== 'cancelled')
@@ -36,7 +40,7 @@ const showsData = upcoming.map((s) => ({
 const heroVars: string[] = [];
 const addHeroImage = (varName: string, file: string) => {
   if (fs.existsSync(`public/uploads/img/${file}`)) {
-    heroVars.push(`--${varName}: url('/uploads/img/${file}')`);
+    heroVars.push(`--${varName}: url('${base}uploads/img/${file}')`);
   }
 };
 addHeroImage('hero-image', 'hero.jpg');
@@ -61,8 +65,8 @@ const initials = (name: string) =>
       <h1>Три сердца — один ритм</h1>
 
       <div class="hero-actions">
-        <a href="/bio" class="btn">Познакомиться</a>
-        <a href="/#shows" class="btn btn-outline">Афиша концертов</a>
+        <a href={url('/bio')} class="btn">Познакомиться</a>
+        <a href={`${base}#shows`} class="btn btn-outline">Афиша концертов</a>
       </div>
 
       <div class="socials">
@@ -121,14 +125,14 @@ const initials = (name: string) =>
       <section class="content-section">
         <div class="section-header">
           <h2 class="section-title">Состав</h2>
-          <a href="/bio" class="section-link">Весь коллектив →</a>
+          <a href={url('/bio')} class="section-link">Весь коллектив →</a>
         </div>
 
         <div class="members-teaser-grid">
           {members.map((m, i) => (
-            <a class="member-teaser" href="/bio" style={`--i: ${i}`}>
+            <a class="member-teaser" href={url('/bio')}  style={`--i: ${i}`}>
               {m.data.photoHome ? (
-                <img src={m.data.photoHome} alt={m.data.name} loading="lazy" decoding="async" />
+                <img src={url(m.data.photoHome)} alt={m.data.name} loading="lazy" decoding="async" />
               ) : (
                 <div class="member-teaser-empty" aria-hidden="true">{initials(m.data.name)}</div>
               )}
@@ -145,7 +149,7 @@ const initials = (name: string) =>
     <section class="content-section">
       <div class="section-header">
         <h2 class="section-title">Слушать музыку</h2>
-        <a href="/media" class="section-link">Все треки →</a>
+        <a href={url('/media')} class="section-link">Все треки →</a>
       </div>
 
       {tracks.length === 0 && (
@@ -173,7 +177,7 @@ const initials = (name: string) =>
     <section class="content-section">
       <div class="section-header">
         <h2 class="section-title">Новости и события</h2>
-        <a href="/news" class="section-link">Все новости →</a>
+        <a href={url('/news')} class="section-link">Все новости →</a>
       </div>
 
       <div class="news-grid">

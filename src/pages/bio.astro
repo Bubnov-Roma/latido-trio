@@ -3,9 +3,13 @@ import { getCollection, getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import fs from 'node:fs';
 
+const _base = import.meta.env.BASE_URL;
+const base = _base.endsWith('/') ? _base : _base + '/';
+const url = (p: string) => (p.startsWith('/') ? base + p.slice(1) : p);
+
 const bio = await getEntry('pages', 'bio');
 if (!bio) {
-  return Astro.redirect('/404');
+  return Astro.redirect(url('/404'));
 }
 const { Content } = await render(bio);
 
@@ -28,7 +32,7 @@ const initials = (name: string) =>
 const heroVars: string[] = [];
 const addHeroImage = (varName: string, file: string) => {
   if (fs.existsSync(`public/uploads/img/${file}`)) {
-    heroVars.push(`--${varName}: url('/uploads/img/${file}')`);
+    heroVars.push(`--${varName}: url('${base}uploads/img/${file}')`);
   }
 };
 addHeroImage('hero-image', 'band.jpg');
@@ -66,7 +70,7 @@ const heroStyle = [...heroVars, '--hero-image-position: center'].join('; ');
                 {m.data.photo ? (
                   <img
                     class="member-photo"
-                    src={m.data.photo}
+                    src={url(m.data.photo)}
                     alt={m.data.name}
                     loading="lazy"
                     decoding="async"
@@ -98,7 +102,7 @@ const heroStyle = [...heroVars, '--hero-image-position: center'].join('; ');
 
     <section class="band-cta">
       <p>Хотите, чтобы ваше мероприятие загорелось настоящим музыкальным огнём?</p>
-      <a href="/contacts" class="btn">Связаться с нами</a>
+      <a href={url("/contacts")} class="btn">Связаться с нами</a>
     </section>
   </div>
 

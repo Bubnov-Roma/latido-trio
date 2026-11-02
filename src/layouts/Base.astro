@@ -10,22 +10,26 @@ interface Props {
 }
 const { title = 'Latido Trio' } = Astro.props;
 
+const _base = import.meta.env.BASE_URL;
+const base = _base.endsWith('/') ? _base : _base + '/';
+const url = (p: string) => (p.startsWith('/') ? base + p.slice(1) : p);
+
 const allTracks = await getCollection('tracks');
 const tracks = allTracks.sort((a, b) => a.data.order - b.data.order);
 
 const nav = [
-  { href: '/', label: 'Главная' },
-  { href: '/bio', label: 'О нас' },
-  { href: '/#shows', label: 'Концерты' },
-  { href: '/media', label: 'Медиа' },
-  { href: '/news', label: 'Новости' },
-  { href: '/contacts', label: 'Контакты' },
+  { href: base, label: 'Главная' },
+  { href: url('/bio'), label: 'О нас' },
+  { href: `${base}#shows`, label: 'Концерты' },
+  { href: url('/media'), label: 'Медиа' },
+  { href: url('/news'), label: 'Новости' },
+  { href: url('/contacts'), label: 'Контакты' },
 ];
 
 
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
-  href === '/' ? currentPath === '/' : currentPath.startsWith(href.split('#')[0]) && href !== '/#shows';
+  href === base ? currentPath === base || currentPath === base.slice(0, -1) : currentPath.startsWith(href.split('#')[0]) && href !== `${base}#shows`;
 ---
 
 <!doctype html>
@@ -39,17 +43,17 @@ const isActive = (href: string) =>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,600&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="icon" href="/favicon.ico" sizes="48x48" />
-    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="icon" href={url('/favicon.ico')} sizes="48x48" />
+    <link rel="icon" type="image/png" href={url('/favicon-96x96.png')} sizes="96x96" />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+    <link rel="manifest" href={url('/site.webmanifest')} />
     <meta name="theme-color" content="#2B2B2A" />
     <ClientRouter />
   </head>
   <body>
     <header class="site-header">
       <div class="header-left">
-        <a href="/" class="brand">
+        <a href={url('/')} class="brand">
           <Logo variant="vertical" size="3rem" />
         </a>
       </div>
@@ -61,7 +65,7 @@ const isActive = (href: string) =>
       </nav>
 
       <div class="header-actions">
-        <a href="/contacts" class="btn btn-outline header-cta">Пригласить нас</a>
+        <a href={url('/contacts')} class="btn btn-outline header-cta">Пригласить нас</a>
         <button
           class="icon-btn burger"
           id="menu-toggle"
@@ -108,7 +112,7 @@ const isActive = (href: string) =>
 
     <footer class="site-footer">
       <div class="container">
-        © {new Date().getFullYear()} Latido Trio · <a href="/admin">Панель управления</a>
+        © {new Date().getFullYear()} Latido Trio · <a href={url('/admin')}>Панель управления</a>
       </div>
     </footer>
 

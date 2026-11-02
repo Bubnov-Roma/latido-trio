@@ -2,9 +2,13 @@
 import { getEntry, render } from 'astro:content';
 import Base from '../layouts/Base.astro';
 
+const _base = import.meta.env.BASE_URL;
+const base = _base.endsWith('/') ? _base : _base + '/';
+const url = (p: string) => (p.startsWith('/') ? base + p.slice(1) : p);
+
 const media = await getEntry('pages', 'media');
 if (!media) {
-  return Astro.redirect('/404'); 
+  return Astro.redirect(url('/404')); 
 }
 const { Content } = await render(media);
 ---
@@ -18,7 +22,7 @@ const { Content } = await render(media);
 
   <h2 class="section-title" style="font-size:1.2rem">Треки</h2>
   <audio controls preload="none" style="width:100%; margin-bottom:1rem;">
-    <source src="/audio/La_Barrosa.mp3" type="audio/mpeg" />
+    <source src={url("/audio/La_Barrosa.mp3")} type="audio/mpeg" />
   </audio>
   </div>
 </Base>
