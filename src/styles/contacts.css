@@ -133,5 +133,4 @@
 @media (max-width: 900px) {
   .contacts-inner { grid-template-columns: 1fr; }
   .contacts-photo img { min-height: 240px; max-height: 38vh; }
-  .contacts-dots { display: none; }
 }

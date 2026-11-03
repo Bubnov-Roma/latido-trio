@@ -1,0 +1,189 @@
+.global-player-wrapper {
+  position: fixed;
+  top: 0;
+  left: calc(1.5rem + 2rem + 1.5rem);
+  height: 72px;
+  display: flex;
+  align-items: center;
+  z-index: 110;
+}
+
+.header-play-trigger {
+  background: transparent;
+  border: none;
+  color: var(--on-surface);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background var(--dur-short) var(--ease), color var(--dur-short) var(--ease);
+}
+.header-play-trigger:hover {
+  background: color-mix(in srgb, var(--on-surface) 8%, transparent);
+  color: var(--primary);
+}
+
+.global-player-wrapper.is-active .header-play-trigger {
+  display: none;
+}
+
+.header-player-panel {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 50%;
+  width: min(560px, calc(100% - 2rem));
+  transform: translateX(-50%) translateY(calc(100% + 2rem));
+  transform-origin: center bottom;
+  opacity: 0;
+  pointer-events: none;
+  background: var(--surface-container-high);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 1.1rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 150;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+  white-space: nowrap;
+}
+.header-player-panel.is-expanded {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.panel-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+.panel-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+.panel-track-info {
+  flex: 0 1 auto;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+.panel-title-wrapper {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: center;
+}
+.panel-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--on-surface);
+  display: inline-block;
+}
+.panel-title.marquee {
+  animation: marquee-bounce 6s ease-in-out infinite alternate;
+}
+@keyframes marquee-bounce {
+  from { transform: translateX(calc(var(--marquee-shift, 0px) / 2)); }
+  to   { transform: translateX(calc(var(--marquee-shift, 0px) / -2)); }
+}
+
+.panel-skip-btn {
+  opacity: 0;
+  transform: scale(0.4);
+  width: 0;
+  padding: 0;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.header-player-panel.is-expanded .panel-skip-btn {
+  opacity: 1;
+  transform: scale(1);
+  width: 32px;
+}
+
+.panel-btn {
+  background: transparent;
+  border: none;
+  color: var(--on-surface);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background var(--dur-short) var(--ease), transform var(--dur-short) var(--ease);
+}
+.panel-btn:hover { background: color-mix(in srgb, var(--on-surface) 12%, transparent); }
+
+.panel-btn-main {
+  position: relative;
+  background: var(--primary);
+  color: var(--on-primary);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.btn-cover-overlay {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  z-index: 1;
+}
+.panel-btn-main svg { position: relative; z-index: 2; }
+
+.panel-close {
+  background: transparent; border: none; color: var(--on-surface-variant);
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: color var(--dur-short) var(--ease);
+}
+.panel-close:hover { color: var(--on-surface); }
+
+@media (min-width: 901px) {
+  .listen-btn {
+    margin-left: 1.1rem;
+    margin-right: auto;
+  }
+
+  .header-play-trigger { display: none; }
+
+  .header-player-panel {
+    top: 9px;
+    bottom: auto;
+    left: 320px;
+    width: 360px;
+    max-width: none;
+    padding: 0.35rem 1.1rem;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(-12px);
+    transition:
+      opacity var(--dur-med) var(--ease),
+      transform 0.45s var(--ease);
+  }
+  .header-player-panel.is-expanded {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+}

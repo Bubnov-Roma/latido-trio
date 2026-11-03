@@ -1,0 +1,129 @@
+.content-section {
+  margin-top: 4rem; 
+}
+.section-header {
+  display: flex; 
+  align-items: baseline; 
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.section-subtitle-count, .section-link {
+  font-size: 0.9rem; 
+  color: var(--primary); 
+  font-weight: 600;
+}
+.section-link:hover { 
+    text-decoration: underline; 
+}
+.members-teaser-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); 
+  gap: clamp(1.75rem, 5vw, 1rem);
+  align-items: stretch;
+  justify-content: center;
+}
+.member-teaser {
+  display: flex;
+  flex-direction: column; 
+  height: 100%;
+  text-decoration: none;
+}
+.member-teaser img {
+  width: 100%;
+  aspect-ratio: 3 / 4; 
+  object-fit: cover;
+  opacity: 0.90;
+  filter: brightness(1.06);
+  transition:
+    clip-path 1s var(--ease) 0.1s,
+    transform 1s var(--ease) 0.1s,
+    filter 0.5s var(--ease);
+}
+.member-teaser-caption {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  margin-top: auto;
+}
+.mt-name {
+  font-family: var(--font-display);
+  font-size: 1.5rem; 
+  color: var(--primary);
+}
+/* Роль в подписи тизера (точка-акцент) */
+.mt-role {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--on-surface-variant);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.mt-role::before {
+  content: '';
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+/* Афиша */
+.show-list { 
+  list-style: none; 
+  display: flex; 
+  flex-direction: column;
+}
+
+/* Треки */
+.tracks-grid {
+  display: grid; 
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+  gap: 1rem;
+}
+.track-card {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--surface-container);
+  border-radius: var(--radius-md);
+  transition: all var(--dur-short) var(--ease);
+}
+.track-card:hover {
+  background: var(--surface-container-high);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+.track-play-btn {
+  background: var(--primary-container); color: var(--on-primary-container);
+  border: none; width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; flex-shrink: 0;
+  transition: background var(--dur-short) var(--ease), transform var(--dur-short) var(--ease);
+}
+.track-play-btn:hover {
+  background: var(--primary); color: var(--on-primary); transform: scale(1.05);
+}
+.track-play-btn.is-playing {
+  background: var(--primary); color: var(--on-primary);
+}
+.track-card-info { display: flex; align-items: center; gap: 1rem; min-width: 0; }
+.track-number { font-size: 0.85rem; font-weight: 700; color: var(--on-surface-variant); }
+.track-card .track-title {
+  font-weight: 600; font-size: 1rem; color: var(--on-surface);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Новости */
+.news-grid { 
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 1.25rem; }
+.news-card img { width: 100%; height: 170px; object-fit: cover; }
+.news-card .pad { padding: 1.1rem 1.25rem 1.25rem; }
+.news-card time { color: var(--on-surface-variant); font-size: .8rem; }
+
+.empty-card {
+  padding: 2.5rem; text-align: center;
+  background: var(--surface-container);
+  border-radius: var(--radius-lg);
+  color: var(--on-surface-variant);
+}

@@ -4,13 +4,13 @@
 
 ```
 src/
-  layouts/Base.astro       — общий шаблон
-  pages/
-    index.astro            — главная
-    bio.astro              — био
-    news.astro             — новости
-    media.astro            — видео/фото/аудио
-    contacts.astro         — контакты + ссылка на техрайдер
+  ├── layouts/Base.astro       — общий шаблон
+  ├── pages/
+  |   ├── index.astro            — главная
+  |   ├── bio.astro              — био
+  |   ├── news.astro             — новости
+  |   ├── media.astro            — видео/фото/аудио
+  |   ├── contacts.astro         — контакты + ссылка на техрайдер
   content.config.ts        — схемы данных
 content/
   shows/                   — концерты
@@ -21,6 +21,15 @@ public/
   uploads/                 — картинки, загруженные через CMS
   audio/                   — mp3 для прослушивания
   docs/                    — техрайдер.pdf и другие документы
+  styles/
+    ├── global.css         # только @import'ы + токены/база
+    ├── base.css           # переменные темы, reset, кнопки, карточки, бейджи, футер
+    ├── header.css         # шапка v2 + панель меню (НОВОЕ, см. ниже)
+    ├── player.css         # глобальный плеер
+    ├── hero.css           # hero-секция
+    ├── home.css           # афиша-тизер, треки, новости на главной
+    ├── band.css           # страница /band (состав)
+    ├── shows.css          # show-list + модалка концерта
 ```
 
 ## Локальный запуск

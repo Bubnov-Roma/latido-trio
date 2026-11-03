@@ -26,7 +26,6 @@ const nav = [
   { href: url('/contacts'), label: 'Контакты' },
 ];
 
-
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
   href === base ? currentPath === base || currentPath === base.slice(0, -1) : currentPath.startsWith(href.split('#')[0]) && href !== `${base}#shows`;
@@ -52,59 +51,38 @@ const isActive = (href: string) =>
   </head>
   <body>
     <header class="site-header">
-      <div class="header-left">
-        <a href={url('/')} class="brand">
-          <Logo variant="vertical" size="3rem" />
-        </a>
-      </div>
+      <a href={url('/')} class="brand">
+        <Logo variant="vertical" size="3rem"  class="blend-layer" />
+      </a>
 
-      <nav class="desktop-nav">
-        {nav.map((item) => (
-          <a href={item.href} class={isActive(item.href) ? 'active' : ''}>{item.label}</a>
-        ))}
-      </nav>
+      <button class="listen-btn blend-layer" id="listen-btn" type="button">Слушать</button>
+
 
       <div class="header-actions">
-        <a href={url('/contacts')} class="btn btn-outline header-cta">Пригласить нас</a>
-        <button
-          class="icon-btn burger"
-          id="menu-toggle"
-          aria-label="Открыть меню"
-          aria-expanded="false"
-          aria-controls="drawer"
-        >
-          <span class="menu-line l1"></span>
-          <span class="menu-line l2"></span>
-        </button>
+        <div class="nav-wrap">
+          <button
+            class="icon-btn burger blend-layer"
+            id="menu-toggle"
+            type="button"
+            aria-label="Открыть меню"
+            aria-expanded="false"
+            aria-controls="nav-panel"
+          >
+            <span class="menu-line l1"></span>
+            <span class="menu-line l2"></span>
+          </button>
+        </div>
       </div>
     </header>
+    <nav class="nav-panel" id="nav-panel" aria-label="Основная навигация">
+      {nav.map((item) => (
+        <a href={item.href} class:list={['nav-link', { active: isActive(item.href) }]}>{item.label}</a>
+      ))}
+      <div class="nav-panel-footer">…</div>
+    </nav>
+
 
     <Player tracks={tracks} />
-
-    <div class="scrim" id="scrim" aria-hidden="true"></div>
-
-    <aside class="drawer" id="drawer" aria-label="Основная навигация">
-      <button class="icon-btn drawer-close" id="menu-close" aria-label="Закрыть меню">
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-      </button>
-
-      <Logo variant='vertical' class="drawer-brand" size="8rem" />
-
-      <nav class="drawer-nav">
-        {nav.map((item) => (
-          <a href={item.href} class={isActive(item.href) ? 'active' : ''}>{item.label}</a>
-        ))}
-      </nav>
-
-      <div class="drawer-lang">
-        <a href="#" class="active" hreflang="ru">RU</a>
-        <a href="#" hreflang="en">EN</a>
-      </div>
-
-      <div class="drawer-dots" aria-hidden="true"></div>
-    </aside>
 
     <main>
       <slot />
@@ -116,28 +94,45 @@ const isActive = (href: string) =>
       </div>
     </footer>
 
-    <script>
-      const body = document.body;
-      const toggle = document.getElementById('menu-toggle');
-      const closeBtn = document.getElementById('menu-close');
-      const scrim = document.getElementById('scrim');
+    <script is:inline>
+      (() => {
+        const setMenu = (open) => {
+          document.body.classList.toggle('menu-open', open);
+          const t = document.getElementById('menu-toggle');
+          if (t) {
+            t.setAttribute('aria-expanded', String(open));
+            t.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
+          }
+        };
 
-      const setMenu = (open: boolean) => {
-        body.classList.toggle('menu-open', open);
-        toggle?.setAttribute('aria-expanded', String(open));
-        toggle?.setAttribute('aria-label', open ? 'Закрыть меню' : 'Открыть меню');
-      };
+        if (window.__navInit) return;
+        window.__navInit = true;
 
-      toggle?.addEventListener('click', () => setMenu(!body.classList.contains('menu-open')));
-      closeBtn?.addEventListener('click', () => setMenu(false));
-      scrim?.addEventListener('click', () => setMenu(false));
+        document.addEventListener('click', (e) => {
+          const t = e.target;
+          if (!(t instanceof Element)) return;
+          if (t.closest('#menu-toggle')) {
+            setMenu(!document.body.classList.contains('menu-open'));
+          } else if (t.closest('.nav-panel a')) {
+            setMenu(false);
+          } else if (!t.closest('.nav-panel')) {
+            setMenu(false);
+          }
+        });
 
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') setMenu(false);
-      });
-      document.querySelectorAll('.drawer-nav a').forEach((a) => {
-        a.addEventListener('click', () => setMenu(false));
-      });
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') setMenu(false);
+        });
+
+        document.addEventListener('astro:page-load', () => setMenu(false));
+
+        document.addEventListener('click', (e) => {
+          const t = e.target;
+          if (t instanceof Element && t.closest('#listen-btn')) {
+            document.getElementById('p-play')?.click();
+          }
+        });
+      })();
     </script>
   </body>
 </html>

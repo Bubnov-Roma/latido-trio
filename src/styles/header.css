@@ -1,0 +1,167 @@
+.site-header {
+  position: fixed; inset: 0 0 auto 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 72px; padding: 0 1.5rem;
+  pointer-events: none;
+  mix-blend-mode: difference; 
+}
+.site-header > * { pointer-events: auto; }
+
+.blend-layer {
+  color: #fff;
+}
+.blend-layer:hover { opacity: 0.65; }
+.icon-btn.blend-layer:hover { background: transparent; }
+
+.brand { display: flex; align-items: center; }
+
+.listen-btn {
+  background: none; border: none; cursor: pointer;
+  font: 600 0.82rem/1 var(--font-body);
+  letter-spacing: 0.18em; text-transform: uppercase;
+  padding: 0.6rem 0.4rem;
+}
+
+.header-actions { display: flex; align-items: center; gap: 1.1rem; }
+
+.nav-wrap { position: relative; }
+
+.burger { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 6px; }
+.menu-line {
+  display: block; width: 22px; height: 2px; border-radius: 2px;
+  background: currentColor;
+  transition: transform var(--dur-med) var(--ease);
+}
+body.menu-open .burger .l1 { transform: translateY(4px) rotate(45deg); }
+body.menu-open .burger .l2 { transform: translateY(-4px) rotate(-45deg); }
+
+.nav-panel {
+  position: fixed;
+  top: 0; right: 0; bottom: 0;
+  z-index: 99;
+  width: 100%;
+  padding: calc(72px + 2.5rem) 1.5rem 2rem;
+  background: var(--surface);
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateX(103%);
+  transition: transform 0.45s var(--ease);
+}
+body.menu-open .nav-panel {
+  transform: none;
+}
+
+.nav-link {
+  display: block;
+  padding: 0.85rem 0.5rem;
+  color: var(--on-surface);
+  font-size: 1.05rem;
+  border-bottom: 1px solid var(--outline-variant);
+  transition: color var(--dur-short) var(--ease), padding-left var(--dur-short) var(--ease);
+}
+.nav-link:hover { padding-left: 0.8rem; }
+.nav-link.active { color: var(--primary); font-weight: 600; }
+
+.nav-panel-footer {
+  padding: 1rem 0.25rem 0.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.drawer-lang { display: flex; gap: 1rem; }
+.drawer-lang a { color: var(--on-surface-variant); font-size: .85rem; letter-spacing: .12em; }
+.drawer-lang a.active { color: var(--primary); font-weight: 700; }
+
+@media (prefers-color-scheme: light) {
+  .nav-panel { background: var(--surface-container); }
+}
+
+@media (max-width: 900px) {
+  .site-header { padding: 0 1rem; }
+  .listen-btn { display: none; }
+
+  .brand { position: relative; z-index: 2; }
+  .burger { z-index: 2; }
+
+  body.menu-open { overflow: hidden; }
+
+  .nav-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: auto;
+    z-index: 1;
+    width: 100%;
+    min-width: 0;
+    padding: calc(72px + 2.5rem) 1.5rem 2rem;
+    background: var(--surface);
+    border-radius: 0;
+    box-shadow: none;
+    opacity: 1;
+    transform: translateX(103%);
+    transition: transform 0.45s var(--ease);
+  }
+  body.menu-open .nav-panel {
+    transform: none;
+  }
+
+  .nav-link {
+    font-family: var(--font-display);
+    font-size: clamp(2.1rem, 9vw, 3.2rem);
+    font-weight: 500;
+    line-height: 1.15;
+    padding: 1.05rem 0.25rem;
+  }
+  .nav-link:hover { padding-left: 0.6rem; }
+
+  .nav-panel-footer {
+    margin-top: auto;
+    padding-bottom: 0.25rem;
+  }
+}
+@media (min-width: 901px) {
+  .nav-panel {
+    top: 16px;
+    right: calc(1.5rem + 44px + 0.4rem);
+    bottom: auto; left: auto;
+    width: auto;
+    padding: 0 0;
+    max-width: 0;
+    overflow: hidden;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.15rem;
+    background: var(--surface-container-high);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--radius-xl);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(10px);
+    transition:
+      max-width 0.45s var(--ease),
+      padding 0.45s var(--ease),
+      opacity var(--dur-med) var(--ease),
+      transform 0.45s var(--ease);
+  }
+
+  body.menu-open .nav-panel {
+    max-width: 700px;
+    padding: 0 0.5rem;
+    opacity: 1;
+    transform: none;
+  }
+
+  .nav-link {
+    border-bottom: none;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+  .nav-link:hover { padding-left: 0.85rem; }
+
+  .nav-panel-footer { display: none; }
+}

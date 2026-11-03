@@ -54,10 +54,10 @@ const heroStyle = [...heroVars, '--hero-image-position: center'].join('; ');
     </section>
 
     {withContent.length > 0 && (
-      <section class="band-section">
-        <div class="band-heading">
+      <section class="bio-section">
+        <div class="bio-heading">
           <h2 >Состав</h2>
-          <p class="band-sub">Три стихии в одном ансамбле</p>
+          <p class="bio-sub">Три стихии в одном ансамбле</p>
         </div>
 
         <div class="member-rows">
@@ -100,7 +100,7 @@ const heroStyle = [...heroVars, '--hero-image-position: center'].join('; ');
       </section>
     )}
 
-    <section class="band-cta">
+    <section class="bio-cta">
       <p>Хотите, чтобы ваше мероприятие загорелось настоящим музыкальным огнём?</p>
       <a href={url("/contacts")} class="btn">Связаться с нами</a>
     </section>
@@ -137,14 +137,14 @@ const heroStyle = [...heroVars, '--hero-image-position: center'].join('; ');
   .bio-story p + p {
     margin-top: 1.25rem;
   }
-  .band-section {
+  .bio-section {
     margin-top: 6rem;
   }
-  .band-section .band-head {
+  .bio-section .bio-head {
     margin-bottom: 4rem;
     text-align: center;
   }
-  .band-section .band-head .section-title {
+  .bio-section .bio-head .section-title {
     font-size: clamp(2.2rem, 4vw, 3rem);
   }
 </style>

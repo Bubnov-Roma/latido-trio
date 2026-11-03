@@ -1,0 +1,90 @@
+.hero {
+  min-height: calc(100svh + 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: var(--hero-align, center);
+  text-align: var(--hero-text, center);
+  justify-content: center;
+  padding: 1rem 1.25rem 3rem;
+  gap: 1.75rem;
+
+  --h-img: var(--hero-image, none);
+
+  background-color: var(--bg);
+  background-image:
+    /* linear-gradient(to bottom, var(--bg) 0%, transparent 40%), */
+    linear-gradient(to top, var(--bg) 0%, transparent 25%),
+    linear-gradient(
+      color-mix(in srgb, var(--bg) 10%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 70%, transparent) 100%
+    ),
+    var(--h-img);
+  background-position: var(--hero-image-position, center);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.hero h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 2vw, 8rem);
+}
+.hero-content {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+  flex-direction: column;
+  align-items: var(--hero-align, center);
+  text-align: var(--hero-text, center);
+  max-width: var(--hero-content-width, 680px);
+}
+.hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--on-surface-variant);
+  max-width: 600px;
+  margin: 0 auto;
+}
+.hero-actions {
+  display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+}
+.hero .socials { display: flex; gap: 1.1rem; }
+.hero .socials a {
+  display: inline-flex; width: 44px; height: 44px; border-radius: 50%;
+  align-items: center; justify-content: center; color: var(--on-surface);
+  transition: background var(--dur-short) var(--ease), color var(--dur-short) var(--ease);
+}
+.hero .socials a:hover { background: var(--primary-container); color: var(--on-primary-container); }
+
+/* --- Выбор картинки: тема × вьюпорт. Порядок важен! --- */
+/* светлая тема (все экраны) */
+@media (prefers-color-scheme: light) {
+  .hero {
+    --h-img: var(--hero-image-light, var(--hero-image, none));
+  }
+}
+/* планшет ≤1200px, тёмная */
+@media (max-width: 1200px) {
+  .hero {
+    --h-img: var(--hero-image-tablet, var(--hero-image, none));
+  }
+}
+/* телефон ≤640px, тёмная */
+@media (max-width: 640px) {
+  .hero {
+    --h-img: var(--hero-image-mobile, var(--hero-image-tablet, var(--hero-image, none)));
+  }
+}
+/* планшет + светлая */
+@media (max-width: 1200px) and (prefers-color-scheme: light) {
+  .hero {
+    --h-img: var(--hero-image-tablet-light,
+      var(--hero-image-tablet, var(--hero-image-light, var(--hero-image, none))));
+  }
+}
+/* телефон + светлая */
+@media (max-width: 640px) and (prefers-color-scheme: light) {
+  .hero {
+    --h-img: var(--hero-image-mobile-light,
+      var(--hero-image-mobile, var(--hero-image-tablet-light,
+        var(--hero-image-light, var(--hero-image, none)))));
+  }
+}
