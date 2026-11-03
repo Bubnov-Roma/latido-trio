@@ -156,7 +156,5 @@
   .show-modal,
   .show-modal-panel {
     transition: none !important;
-    opacity: 1 !important;
-    transform: none !important;
   }
 }
