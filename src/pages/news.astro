@@ -5,15 +5,19 @@ import Base from '../layouts/Base.astro';
 const allNews = (await getCollection('news')).sort(
   (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
 );
+
+const _base = import.meta.env.BASE_URL;
+const base = _base.endsWith('/') ? _base : _base + '/';
+const url = (p: string) => (p.startsWith('/') ? base + p.slice(1) : p);
 ---
 
 <Base title="Новости">
-  <div class="container" style="padding-top: 6rem">
-    <h1 class="section-title">Новости</h1>
+  <div class="container">
+    <h1 class="page-title">Новости</h1>
     <div class="news-grid">
       {allNews.map((item) => (
         <article class="news-card card">
-          {item.data.cover && <img src={item.data.cover.src} alt={item.data.title} />}
+          {item.data.cover && <img src={url(item.data.cover)} alt={item.data.title} />}
           <div class="pad">
             <time datetime={item.data.date.toISOString()}>
               {item.data.date.toLocaleDateString('ru-RU')}

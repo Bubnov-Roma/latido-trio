@@ -7,15 +7,16 @@ const shows = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/shows' }),
   schema: ({ image }: { image: ImageFunction }) =>
     z.object({
-      date: z.coerce.date(),          
+      date: z.coerce.date(),
       city: z.string(),
       venue: z.string(),
+      address: z.string().optional(),
       status: z.enum(['announced', 'soldout', 'cancelled']).default('announced'),
-      ticketUrl: z.string().optional(), 
+      ticketUrl: z.string().optional(),
       title: z.string().optional(),
+      subtitle: z.string().optional(),
       time: z.string().optional(),
-      poster: image().optional(),
-      description: z.string().optional(),
+      poster: z.string().optional(),
     }),
 });
 
@@ -44,7 +45,7 @@ const news = defineCollection({
     z.object({
       title: z.string(),
       date: z.coerce.date(),
-      cover: image().optional(),
+      cover: z.string().optional(),
     }),
 });
 

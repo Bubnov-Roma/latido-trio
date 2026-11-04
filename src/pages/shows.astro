@@ -1,0 +1,50 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import ShowList from '../components/ShowList.astro';
+import { prepareShows } from '../lib/shows';
+
+const now = new Date();
+const all = (await getCollection('shows')).filter((s) => s.data.status !== 'cancelled');
+const upcoming = all.filter((s) => s.data.date >= now).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+const past = all.filter((s) => s.data.date < now).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
+---
+
+<Base title="Афиша — Latido Trio">
+  <section class="container">
+    <h1 class="page-title">Предстоящие концерты</h1>
+    <ShowList shows={prepareShows(upcoming)} uid="upcoming" />
+
+    {past.length > 0 && (
+      <div>
+        <button type="button" class="btn btn-outline shows-archive-toggle" id="archive-toggle">
+          Показать прошедшие концерты 
+        </button>
+        <div class="shows-archive" id="shows-archive" data-count={past.length} hidden>
+          <ShowList shows={prepareShows(past)} uid="past" />
+        </div>
+      </div>
+    )}
+  </section>
+
+  <script is:inline>
+    (() => {
+      if (window.__archiveInit) return;
+      window.__archiveInit = true;
+      document.addEventListener('click', (e) => {
+        const t = e.target;
+        if (!(t instanceof Element)) return;
+        const btn = t.closest('#archive-toggle');
+        if (!btn) return;
+        const box = document.getElementById('shows-archive');
+        if (!box) return;
+        const willOpen = box.hasAttribute('hidden');
+        if (willOpen) box.removeAttribute('hidden');
+        else box.setAttribute('hidden', '');
+        btn.textContent = willOpen
+          ? 'Скрыть прошедшие концерты'
+          : `Показать прошедшие концерты`;
+      });
+    })();
+  </script>
+</Base>

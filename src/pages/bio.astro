@@ -35,7 +35,7 @@ const addHeroImage = (varName: string, file: string) => {
     heroVars.push(`--${varName}: url('${base}uploads/img/${file}')`);
   }
 };
-addHeroImage('hero-image', 'band.jpg');
+addHeroImage('hero-image', 'bio.jpg');
 const heroStyle = [...heroVars, '--hero-image-position: center'].join('; ');
 ---
 

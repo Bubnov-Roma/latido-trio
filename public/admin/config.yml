@@ -20,9 +20,12 @@ collections:
     sortable_fields: [date]
     fields:
       - { label: "Название", name: title, widget: string, required: false }
+      - { label: "Подзаголовок (программа)", name: subtitle, widget: string, required: false }
       - { label: "Дата и время", name: date, widget: datetime, required: true }
       - { label: "Город", name: city, widget: string }
       - { label: "Площадка", name: venue, widget: string, required: false }
+      - { label: "Адрес (улица, дом)", name: address, widget: string, required: false }
+      - { label: "Время начала", name: time, widget: string, required: false }
       - { label: "Ссылка на билеты", name: ticketUrl, widget: string, required: false }
       - { label: "Афиша (картинка)", name: poster, widget: image, required: false }
       - label: "Статус"

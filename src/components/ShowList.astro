@@ -1,0 +1,175 @@
+---
+interface Props {
+  shows: any[];
+  uid?: string;
+}
+const { shows, uid = 'main' } = Astro.props;
+---
+
+<div class="shows-root" data-shows-root>
+  {shows.length === 0 ? (
+    <div class="empty-card"><p>Концертов пока нет.</p></div>
+  ) : (
+    <ul class="show-list">
+      {shows.map((s, i) => (
+        <li>
+          <div class="show-item" data-show-index={i} role="button" tabindex="0">
+            <div class="show-date">
+              <span class="show-day">{s.day}</span>
+              <span class="show-my">{s.monthYear}</span>
+              {s.time && <span class="show-time">{s.time}</span>}
+            </div>
+            <div class="show-info">
+              <span class="show-title">
+                {s.title}
+                {s.status === 'soldout' && <span class="badge">Sold out</span>}
+              </span>
+              {s.subtitle && <span class="show-subtitle">{s.subtitle}</span>}
+              {s.calendarUrl && (
+                <a class="show-cal" href={s.calendarUrl} target="_blank" rel="noopener">Добавить в календарь</a>
+              )}
+            </div>
+            <div class="show-loc">
+              <span class="show-loc-city">{s.city}</span>
+              {(s.venue || s.address) && (
+                <span class="show-loc-venue">{[s.venue, s.address].filter(Boolean).join(' · ')}</span>
+              )}
+              {s.mapUrl && (
+                <a class="show-map" href={s.mapUrl} target="_blank" rel="noopener">Google Maps →</a>
+              )}
+            </div>
+            <div class="show-cta">
+              {s.status === 'soldout' ? (
+                <span class="show-cta-btn is-disabled">Продано</span>
+              ) : s.ticketUrl ? (
+                <a class="show-cta-btn" href={s.ticketUrl} target="_blank" rel="noopener">Билеты</a>
+              ) : (
+                <span class="show-cta-btn">Подробнее</span>
+              )}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <div class="show-modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="show-modal-scrim" data-show-close></div>
+    <div class="show-modal-panel">
+      <button class="icon-btn show-modal-close" data-show-close aria-label="Закрыть">
+        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+          <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+      <div class="sm-date" data-sm="date"></div>
+      <div class="sm-time" data-sm="time"></div>
+      <div class="sm-main">
+        <div class="sm-poster" data-sm="poster"></div>
+        <div class="sm-info">
+          <h3 class="sm-title" data-sm="title"></h3>
+          <div class="sm-venue-line" data-sm="venue"></div>
+          <a class="sm-map" data-sm="map" target="_blank" rel="noopener">Открыть в Google Maps</a>
+        </div>
+      </div>
+      <p class="sm-desc" data-sm="desc"></p>
+      <div class="sm-actions" data-sm="actions"></div>
+    </div>
+  </div>
+
+  <script type="application/json" data-shows-data set:html={JSON.stringify(shows)}></script>
+</div>
+
+<script is:inline>
+  (() => {
+    if (window.__showsUI) return;
+    window.__showsUI = true;
+
+    let lastFocus = null;
+
+    const closeModal = (modal) => {
+      if (!modal || !modal.classList.contains('is-open')) return;
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+      lastFocus?.focus?.();
+    };
+
+    const openModal = (root, i) => {
+      const dataEl = root.querySelector('[data-shows-data]');
+      const modal = root.querySelector('.show-modal');
+      if (!dataEl || !modal) return;
+      const shows = JSON.parse(dataEl.textContent || '[]');
+      const s = shows[i];
+      if (!s) return;
+
+      const set = (name, text) => {
+        const el = modal.querySelector(`[data-sm="${name}"]`);
+        if (el) el.textContent = text || '';
+        return el;
+      };
+
+      set('date', s.dateLabel);
+      set('time', s.time ? `Начало: ${s.time}` : '');
+      set('title', s.title);
+      set('venue', [s.venue, s.address].filter(Boolean).join(' · ') + (s.city ? ` — ${s.city}` : ''));
+
+      const poster = modal.querySelector('[data-sm="poster"]');
+      if (poster) {
+        poster.style.backgroundImage = s.posterUrl ? `url('${s.posterUrl}')` : 'none';
+        poster.style.display = s.posterUrl ? '' : 'none';
+      }
+
+      const map = modal.querySelector('[data-sm="map"]');
+      if (map) {
+        if (s.mapUrl) { map.setAttribute('href', s.mapUrl); map.style.display = ''; }
+        else map.style.display = 'none';
+      }
+
+      const desc = set('desc', s.description);
+      if (desc) desc.style.display = s.description ? '' : 'none';
+
+      const actions = modal.querySelector('[data-sm="actions"]');
+      if (actions) {
+        if (s.status === 'soldout') {
+          actions.innerHTML = '<span class="btn-disabled">Билеты закончились</span>';
+        } else if (s.ticketUrl) {
+          actions.innerHTML = `<a class="btn btn-outline" href="${s.ticketUrl}" target="_blank" rel="noopener">Купить билет</a>`;
+        } else {
+          actions.innerHTML = '';
+        }
+      }
+
+      lastFocus = document.activeElement;
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+      modal.querySelector('.show-modal-close')?.focus();
+    };
+
+    document.addEventListener('click', (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      const root = t.closest('[data-shows-root]');
+      if (!root) return;
+      const modal = root.querySelector('.show-modal');
+      if (t.closest('[data-show-close]')) { closeModal(modal); return; }
+      const row = t.closest('[data-show-index]');
+      if (!row || t.closest('a')) return;
+      openModal(root, Number(row.dataset.showIndex));
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const t = e.target;
+      if (!(t instanceof Element)) return;
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.show-modal.is-open').forEach(closeModal);
+        return;
+      }
+      if ((e.key === 'Enter' || e.key === ' ') && t.matches('[data-show-index]')) {
+        e.preventDefault();
+        const root = t.closest('[data-shows-root]');
+        if (root) openModal(root, Number(t.dataset.showIndex));
+      }
+    });
+  })();
+</script>
