@@ -34,6 +34,7 @@
   object-fit: cover;
   opacity: 0.90;
   filter: brightness(1.06);
+  border-radius: var(--radius-md);
   transition:
     clip-path 1s var(--ease) 0.1s,
     transform 1s var(--ease) 0.1s,
@@ -51,7 +52,6 @@
   font-size: 1.5rem; 
   color: var(--primary);
 }
-/* Роль в подписи тизера (точка-акцент) */
 .mt-role {
   display: inline-flex;
   align-items: center;

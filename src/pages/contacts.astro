@@ -26,7 +26,7 @@ const docs = [
   <section class="contacts-page">
     <div class="container contacts-inner">
       <div class="contacts-info">
-        <h1 class="contacts-title">{c.title}</h1>
+        <h1 class="page-title">{c.title}</h1>
         {c.subtitle && <p class="contacts-sub">{c.subtitle}</p>}
 
         {(c.bookingEmail || c.bookingPhone) && (
@@ -71,9 +71,9 @@ const docs = [
         </div>
       </div>
 
-      <div class="contacts-photo">
+      <!-- <div class="contacts-photo">
         <img src={photo} alt="Latido Trio" loading="eager" decoding="async" />
-      </div>
+      </div> -->
     </div>
 
     <div class="contacts-dots" aria-hidden="true"></div>

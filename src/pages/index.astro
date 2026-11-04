@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
 import Logo from '../components/Logo.astro';
+import ShowList from '../components/ShowList.astro';
+import { prepareShows } from '../lib/shows';
 
 const _base = import.meta.env.BASE_URL;
 const base = _base.endsWith('/') ? _base : _base + '/';
@@ -32,7 +34,7 @@ const showsData = upcoming.map((s) => ({
   venue: s.data.venue,
   dateLabel: `${s.data.date.getDate()} ${MONTHS_FULL[s.data.date.getMonth()]} ${s.data.date.getFullYear()}`,
   time: s.data.time ?? '',
-  description: s.data.description ?? '',
+  description: s.data.venue ?? '',
   status: s.data.status ?? 'active',
   ticketUrl: s.data.ticketUrl ?? '',
 }));
@@ -81,44 +83,18 @@ const initials = (name: string) =>
 
     <section id="shows" class="content-section">
       <div class="section-header">
-        <h2 class="section-title">Концерты</h2>
-        <span class="section-subtitle-count">{upcoming.length} событий</span>
+        <h2 class="section-title">Афиша</h2>
+        <a href={url('/shows')} class="section-link">Все концерты →</a>
       </div>
-
-      {upcoming.length === 0 && (
+    
+      {upcoming.length === 0 ? (
         <div class="empty-card">
-          <p>Новые концерты скоро будут анонсированы. Следите за обновлениями!</p>
+          <p>Ближайших концертов пока нет — но они обязательно будут.</p>
+          <a href={url('/shows')} class="section-link">Смотреть архив →</a>
         </div>
+      ) : (
+        <ShowList shows={prepareShows(upcoming)} uid="home" />
       )}
-
-      <ul class="show-list">
-        {upcoming.map((show, i) => (
-          <li>
-            <button type="button" class="show-item" data-show-index={i}>
-              <span class="show-date">
-                <span class="mon">{MONTHS[show.data.date.getMonth()]}</span>
-                <span class="day">{show.data.date.getDate()}</span>
-                <span class="yr">{show.data.date.getFullYear()}</span>
-              </span>
-              <span class="show-info">
-                <span class="show-city">
-                  {show.data.title ?? show.data.city}
-                  {show.data.status === 'soldout' && <span class="badge">Sold out</span>}
-                </span>
-                <span class="show-venue">
-                  {show.data.title
-                    ? `${show.data.venue} · ${show.data.city}`
-                    : show.data.venue}
-                </span>
-              </span>
-              <span class="show-details">
-                Детали
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </span>
-            </button>
-          </li>
-        ))}
-      </ul>
     </section>
 
     {members.length > 0 && (
@@ -148,7 +124,7 @@ const initials = (name: string) =>
 
     <section class="content-section">
       <div class="section-header">
-        <h2 class="section-title">Слушать музыку</h2>
+        <h2 class="section-title">Композиции</h2>
         <a href={url('/media')} class="section-link">Все треки →</a>
       </div>
 
@@ -184,10 +160,10 @@ const initials = (name: string) =>
         {latestNews.map((item) => (
           <article class="news-card card">
             {item.data.cover && (
-              <div class="news-img-wrap">
-                <img src={item.data.cover.src} alt={item.data.title} loading="lazy" />
-              </div>
-            )}
+            <div class="news-img-wrap">
+              <img src={item.data.cover} alt={item.data.title} loading="lazy" />
+            </div>
+          )}
             <div class="pad">
               <time datetime={item.data.date.toISOString()}>
                 {item.data.date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -199,22 +175,6 @@ const initials = (name: string) =>
       </div>
     </section>
 
-  </div>
-
-  <div class="show-modal" id="show-modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="show-modal-scrim" data-close></div>
-    <div class="show-modal-panel">
-      <button class="icon-btn show-modal-close" data-close aria-label="Закрыть">
-        <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
-          <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
-        </svg>
-      </button>
-      <div class="sm-date" id="sm-date"></div>
-      <h3 class="sm-title" id="sm-title"></h3>
-      <div class="sm-meta" id="sm-meta"></div>
-      <p class="sm-desc" id="sm-desc"></p>
-      <div class="sm-actions" id="sm-actions"></div>
-    </div>
   </div>
 
   <script type="application/json" id="shows-data" set:html={JSON.stringify(showsData)}></script>
@@ -233,56 +193,7 @@ const initials = (name: string) =>
     );
     document.querySelectorAll('.member-teaser').forEach((el) => teaserIO.observe(el));
 
-    const modal = document.getElementById('show-modal');
-    const dataEl = document.getElementById('shows-data');
-
-    if (modal && dataEl) {
-      const shows: any[] = JSON.parse(dataEl.textContent || '[]');
-
       const $ = (id: string) => document.getElementById(id);
       let lastFocus: Element | null = null;
-
-      const openShow = (i: number) => {
-        const s = shows[i];
-        if (!s) return;
-        $('sm-date')!.textContent = s.time ? `${s.dateLabel} · ${s.time}` : s.dateLabel;
-        $('sm-title')!.textContent = s.title;
-        $('sm-meta')!.textContent = `${s.venue} · ${s.city}`;
-
-        const desc = $('sm-desc')!;
-        desc.textContent = s.description;
-        desc.style.display = s.description ? '' : 'none';
-
-        const actions = $('sm-actions')!;
-        if (s.status === 'soldout') {
-          actions.innerHTML = '<span class="btn btn-disabled">Билеты закончились</span>';
-        } else if (s.ticketUrl) {
-          actions.innerHTML = `<a class="btn" href="${s.ticketUrl}" target="_blank" rel="noopener">Купить билет</a>`;
-        } else {
-          actions.innerHTML = '';
-        }
-
-        lastFocus = document.activeElement;
-        modal.classList.add('is-open');
-        modal.setAttribute('aria-hidden', 'false');
-        document.body.style.overflow = 'hidden';
-        (modal.querySelector('.show-modal-close') as HTMLElement | null)?.focus();
-      };
-
-      const closeShow = () => {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        (lastFocus as HTMLElement | null)?.focus?.();
-      };
-
-      document.querySelectorAll('[data-show-index]').forEach((el) => {
-        el.addEventListener('click', () => openShow(Number((el as HTMLElement).dataset.showIndex)));
-      });
-      modal.querySelectorAll('[data-close]').forEach((el) => el.addEventListener('click', closeShow));
-      document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeShow();
-      });
-    }
   </script>
 </Base>

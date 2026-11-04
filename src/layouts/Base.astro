@@ -20,7 +20,7 @@ const tracks = allTracks.sort((a, b) => a.data.order - b.data.order);
 const nav = [
   { href: base, label: 'Главная' },
   { href: url('/bio'), label: 'О нас' },
-  { href: `${base}#shows`, label: 'Концерты' },
+  { href: url('/shows'), label: 'Концерты' },
   { href: url('/media'), label: 'Медиа' },
   { href: url('/news'), label: 'Новости' },
   { href: url('/contacts'), label: 'Контакты' },
@@ -28,7 +28,7 @@ const nav = [
 
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
-  href === base ? currentPath === base || currentPath === base.slice(0, -1) : currentPath.startsWith(href.split('#')[0]) && href !== `${base}#shows`;
+  href === base ? currentPath === base || currentPath === base.slice(0, -1) : currentPath.startsWith(href.split('#')[0]);
 ---
 
 <!doctype html>

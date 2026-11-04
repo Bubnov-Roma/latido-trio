@@ -1,41 +1,72 @@
 .hero {
-  min-height: calc(100svh + 40px);
+  --hero-extra: 20px;
+  
+  min-height: calc(100svh + var(--hero-extra));
   display: flex;
   flex-direction: column;
   align-items: var(--hero-align, center);
   text-align: var(--hero-text, center);
   justify-content: center;
-  padding: 1rem 1.25rem 3rem;
+  padding: 1rem 1.25rem calc(3rem + var(--hero-extra));
   gap: 1.75rem;
+  position: relative;
+  overflow: hidden;
 
   --h-img: var(--hero-image, none);
 
   background-color: var(--bg);
   background-image:
-    /* linear-gradient(to bottom, var(--bg) 0%, transparent 40%), */
-    linear-gradient(to top, var(--bg) 0%, transparent 25%),
+    linear-gradient(to top, var(--bg) 0%, transparent 20%),
     linear-gradient(
       color-mix(in srgb, var(--bg) 10%, transparent) 0%,
-      color-mix(in srgb, var(--bg) 70%, transparent) 100%
+      color-mix(in srgb, var(--bg) 60%, transparent) 100%
     ),
     var(--h-img);
   background-position: var(--hero-image-position, center);
   background-size: cover;
   background-repeat: no-repeat;
 }
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--bg));
+  pointer-events: none;
+}
 .hero h1 {
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(2rem, 2vw, 8rem);
+  font-size: clamp(1.3rem, 4vw, 2.5rem);
+  text-shadow: 0 2px 12px color-mix(in srgb, var(--bg) 60%, transparent);
 }
 .hero-content {
+  position: relative;
   display: flex;
   gap: 1rem;
-  margin-top: 2rem;
+  padding-top: 3rem;
   flex-direction: column;
   align-items: var(--hero-align, center);
   text-align: var(--hero-text, center);
   max-width: var(--hero-content-width, 680px);
+  background: transparent;
+}
+.hero-content::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  z-index: -1;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--surface-container) 95%, transparent) 0%,
+    color-mix(in srgb, var(--surface-container) 85%, transparent) 50%,
+    color-mix(in srgb, var(--surface-container) 30%, transparent) 70%,
+    transparent 80%
+  );
+  filter: blur(95px);
+  pointer-events: none;
 }
 .hero-subtitle {
   font-size: clamp(1rem, 2vw, 1.25rem);
