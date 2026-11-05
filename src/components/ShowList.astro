@@ -114,9 +114,21 @@ const { shows, uid = 'main' } = Astro.props;
       set('venue', [s.venue, s.address].filter(Boolean).join(' · ') + (s.city ? ` — ${s.city}` : ''));
 
       const poster = modal.querySelector('[data-sm="poster"]');
-      if (poster) {
-        poster.style.backgroundImage = s.posterUrl ? `url('${s.posterUrl}')` : 'none';
-        poster.style.display = s.posterUrl ? '' : 'none';
+      const modalPanel = modal.querySelector('.show-modal-panel');
+
+      if (s.posterUrl) {
+        if (poster) {
+          poster.style.backgroundImage = `url('${s.posterUrl}')`;
+          poster.style.display = '';
+        }
+        if (window.innerWidth <= 820) {
+          modalPanel.style.setProperty('--modal-img', `url('${s.posterUrl}')`);
+        } else {
+          modalPanel.style.removeProperty('--modal-img');
+        }
+      } else {
+        if (poster) poster.style.display = 'none';
+        modalPanel.style.removeProperty('--modal-img');
       }
 
       const map = modal.querySelector('[data-sm="map"]');

@@ -1,4 +1,4 @@
-.show-list { list-style: none; display: flex; flex-direction: column; }
+.show-list { list-style: none; display: flex; flex-direction: column; gap: 1rem; }
 .show-list > li { display: flex; }
 
 .show-item {
@@ -25,7 +25,7 @@
   color: var(--primary);
   transition: transform 0.45s var(--ease);
   font-variant-numeric: tabular-nums;
-  line-height: 0.95
+  line-height: 0.95;
 }
 .show-item:hover .show-day { transform: translateX(4px); }
 .show-my { display: block; margin: 0.45rem 0; font-size: 0.95rem; color: var(--on-surface); }
@@ -45,7 +45,7 @@
 .show-title {
   display: flex;
   align-items: center;
-  justify-content:start;
+  justify-content: start;
   gap: 1rem;
   font-family: var(--font-display);
   font-weight: 600;
@@ -135,7 +135,6 @@
   backdrop-filter: blur(6px);
 }
 
-/* Контентная панель модалки */
 .show-modal-panel {
   position: relative;
   background: var(--surface, #1e1e1e);
@@ -155,7 +154,6 @@
   transform: translateY(0);
 }
 
-/* Кнопка закрытия внутри модалки */
 .show-modal-close {
   position: absolute;
   top: 1.25rem;
@@ -164,6 +162,7 @@
   border: none;
   cursor: pointer;
   color: var(--on-surface-variant);
+  z-index: 2;
   transition: color 0.2s ease;
 }
 .show-modal-close:hover {
@@ -181,11 +180,134 @@
 .sm-desc { margin-top: 1.5rem; font-size: 0.95rem; line-height: 1.5; color: var(--on-surface); }
 .sm-actions { margin-top: 2rem; display: flex; gap: 1rem; }
 
+
 @media (max-width: 820px) {
-  .show-item { grid-template-columns: 1fr; gap: 0.9rem; padding: 1.5rem 1rem; }
-  .show-date { display: flex; align-items: baseline; gap: 0.55rem; flex-wrap: wrap; }
-  .show-day { font-size: 2.3rem; }
-  .show-my, .show-time, .show-cal { margin-top: 0; }
-  .show-cta { justify-self: start; }
-  .sm-main { flex-direction: column; }
+  .show-item {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 1.75rem 1rem;
+    text-align: center;
+  }
+
+  .show-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .show-day {
+    font-family: var(--font-display);
+    font-size: 4rem;
+    line-height: 0.9;
+    margin-bottom: 0.2rem;
+  }
+  .show-my {
+    font-size: 1.1rem;
+    margin: 0.2rem 0;
+    font-weight: 500;
+  }
+  .show-time {
+    font-size: 0.9rem;
+    margin-top: 0.1rem;
+  }
+  .show-cal {
+    margin-top: 0.4rem;
+  }
+
+  .show-info, .show-loc {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .show-title {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .show-cta {
+    justify-self: center;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+
+  .show-cta-btn {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    border-bottom: none;
+    background: var(--surface-container, rgba(255,255,255,0.05));
+    border-radius: var(--radius-sm, 8px);
+  }
+  .show-cta-btn::after {
+    display: none;
+  }
+
+  .show-modal-panel {
+    text-align: center;
+    padding: 2rem 1.25rem;
+    position: relative;
+    overflow: hidden;
+    background-color: var(--surface, #1e1e1e);
+  }
+
+  .show-modal-panel::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(to top, var(--surface) 0%, transparent 65%),
+      linear-gradient(to bottom, var(--surface) 0%, transparent 65%),
+      linear-gradient(color-mix(in srgb, var(--surface) 85%, transparent), color-mix(in srgb, var(--surface) 70%, transparent)),
+      var(--modal-img, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(10px);
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .show-modal-panel > *:not(.show-modal-close) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .show-modal-close {
+    position: absolute !important;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 10;
+  }
+
+
+  .sm-main {
+    flex-direction: column;
+    align-items: center;
+  }
+  .sm-poster {
+    display: none !important; 
+  }
+  .sm-info {
+    text-align: center;
+  }
+  .sm-title {
+    font-size: 1.35rem;
+  }
+  .sm-date {
+    font-size: 1.6rem;
+  }
+  .sm-actions {
+    justify-content: center;
+    flex-direction: column;
+  }
+  .sm-actions .btn, .sm-actions a {
+    width: 100%;
+    text-align: center;
+  }
 }
+
