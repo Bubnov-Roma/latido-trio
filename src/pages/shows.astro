@@ -13,7 +13,7 @@ const past = all.filter((s) => s.data.date < now).sort((a, b) => b.data.date.val
 <Base title="Афиша — Latido Trio">
   <section class="container">
     <h1 class="page-title">Предстоящие концерты</h1>
-    <ShowList shows={prepareShows(upcoming)} uid="upcoming" />
+    <ShowList shows={prepareShows(upcoming)} uid="upcoming"/>
 
     {past.length > 0 && (
       <div>

@@ -2,8 +2,10 @@
 interface Props {
   shows: any[];
   uid?: string;
+  mobileLayout?: 'compact' | 'classic';
+  modalStyle?: 'blur' | 'clean';
 }
-const { shows, uid = 'main' } = Astro.props;
+const { shows } = Astro.props;
 ---
 
 <div class="shows-root" data-shows-root>
@@ -53,14 +55,22 @@ const { shows, uid = 'main' } = Astro.props;
     </ul>
   )}
 
-  <div class="show-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class={`show-modal`} role="dialog" aria-modal="true" aria-hidden="true">
     <div class="show-modal-scrim" data-show-close></div>
     <div class="show-modal-panel">
-      <button class="icon-btn show-modal-close" data-show-close aria-label="Закрыть">
+      <button class="icon-btn show-modal-close" data-show-close aria-label="Закрыть" title="Закрыть">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
           <path d="M4 4l12 12M16 4L4 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
         </svg>
       </button>
+
+      <button class="icon-btn show-share-trigger" data-share-btn aria-label="Поделиться концертом" title="Поделиться">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+      </button>
+
       <div class="sm-date" data-sm="date"></div>
       <div class="sm-time" data-sm="time"></div>
       <div class="sm-main">
@@ -85,6 +95,7 @@ const { shows, uid = 'main' } = Astro.props;
     window.__showsUI = true;
 
     let lastFocus = null;
+    let activeShowData = null;
 
     const closeModal = (modal) => {
       if (!modal || !modal.classList.contains('is-open')) return;
@@ -101,6 +112,7 @@ const { shows, uid = 'main' } = Astro.props;
       const shows = JSON.parse(dataEl.textContent || '[]');
       const s = shows[i];
       if (!s) return;
+      activeShowData = s;
 
       const set = (name, text) => {
         const el = modal.querySelector(`[data-sm="${name}"]`);
@@ -158,29 +170,54 @@ const { shows, uid = 'main' } = Astro.props;
       modal.querySelector('.show-modal-close')?.focus();
     };
 
-    document.addEventListener('click', (e) => {
+    document.addEventListener('click', async (e) => {
       const t = e.target;
       if (!(t instanceof Element)) return;
       const root = t.closest('[data-shows-root]');
       if (!root) return;
       const modal = root.querySelector('.show-modal');
+
       if (t.closest('[data-show-close]')) { closeModal(modal); return; }
+
+      const shareBtn = t.closest('[data-share-btn]');
+      if (shareBtn && activeShowData) {
+        const shareData = {
+          title: activeShowData.title,
+          text: `Концерт: ${activeShowData.title} (${activeShowData.dateLabel})\n${activeShowData.city}, ${activeShowData.venue || ''}`,
+          url: window.location.href
+        };
+
+        try {
+          if (activeShowData.posterUrl && navigator.canShare) {
+            const response = await fetch(activeShowData.posterUrl);
+            const blob = await response.blob();
+            const file = new File([blob], 'poster.jpg', { type: blob.type });
+            const fileShareData = { ...shareData, files: [file] };
+            if (navigator.canShare(fileShareData)) {
+              await navigator.share(fileShareData);
+              return;
+            }
+          }
+          if (navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            await navigator.clipboard.writeText(window.location.href);
+            alert('Ссылка скопирована в буфер обмена!');
+          }
+        } catch (err) {
+          console.log('Шеринг отменен или недоступен', err);
+        }
+        return;
+      }
+
       const row = t.closest('[data-show-index]');
       if (!row || t.closest('a')) return;
       openModal(root, Number(row.dataset.showIndex));
     });
 
     document.addEventListener('keydown', (e) => {
-      const t = e.target;
-      if (!(t instanceof Element)) return;
       if (e.key === 'Escape') {
         document.querySelectorAll('.show-modal.is-open').forEach(closeModal);
-        return;
-      }
-      if ((e.key === 'Enter' || e.key === ' ') && t.matches('[data-show-index]')) {
-        e.preventDefault();
-        const root = t.closest('[data-shows-root]');
-        if (root) openModal(root, Number(t.dataset.showIndex));
       }
     });
   })();

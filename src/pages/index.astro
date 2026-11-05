@@ -93,7 +93,7 @@ const initials = (name: string) =>
           <a href={url('/shows')} class="section-link">Смотреть архив →</a>
         </div>
       ) : (
-        <ShowList shows={prepareShows(upcoming)} uid="home" />
+        <ShowList shows={prepareShows(upcoming)} />
       )}
     </section>
 

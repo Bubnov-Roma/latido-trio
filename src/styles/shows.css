@@ -121,20 +121,17 @@
   pointer-events: none;
   transition: opacity 0.3s ease, visibility 0.3s ease;
 }
-
 .show-modal.is-open {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
 }
-
 .show-modal-scrim {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(6px);
 }
-
 .show-modal-panel {
   position: relative;
   background: var(--surface, #1e1e1e);
@@ -149,10 +146,7 @@
   transform: translateY(16px);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-.show-modal.is-open .show-modal-panel {
-  transform: translateY(0);
-}
+.show-modal.is-open .show-modal-panel { transform: translateY(0); }
 
 .show-modal-close {
   position: absolute;
@@ -165,9 +159,22 @@
   z-index: 2;
   transition: color 0.2s ease;
 }
-.show-modal-close:hover {
-  color: var(--on-surface);
+.show-modal-close:hover { color: var(--on-surface); }
+
+.show-share-trigger {
+  position: absolute;
+  top: 4.25rem;
+  right: 1.25rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--on-surface-variant);
+  z-index: 2;
+  /* padding: 1rem; */
+  transition: color 0.2s ease;
 }
+
+.show-share-trigger:hover { color: var(--on-surface); }
 
 .sm-date { font-size: 1.5rem; color: var(--primary); font-weight: 800; font-family: var(--font-display); }
 .sm-time { font-size: 0.9rem; color: var(--on-surface-variant); font-weight: 600; margin-top: 0.2rem; }
@@ -181,6 +188,9 @@
 .sm-actions { margin-top: 2rem; display: flex; gap: 1rem; }
 
 
+/* ==========================================
+   МОБИЛЬНАЯ АДАПТАЦИЯ (<= 820px)
+   ========================================== */
 @media (max-width: 820px) {
   .show-item {
     grid-template-columns: 1fr;
@@ -188,7 +198,6 @@
     padding: 1.75rem 1rem;
     text-align: center;
   }
-
   .show-date {
     display: flex;
     flex-direction: column;
@@ -196,7 +205,7 @@
     text-align: center;
   }
   .show-day {
-    font-family: var(--font-display);
+    font-family: var(--font-display); /* Здесь можно подставить отдельный шрифт цифр, например: var(--font-number, var(--font-display)) */
     font-size: 4rem;
     line-height: 0.9;
     margin-bottom: 0.2rem;
@@ -213,7 +222,6 @@
   .show-cal {
     margin-top: 0.4rem;
   }
-
   .show-info, .show-loc {
     display: flex;
     flex-direction: column;
@@ -247,60 +255,48 @@
     display: none;
   }
 
-  .show-modal-panel {
-    text-align: center;
+
+
+  /* ==========================================
+     ВАРИАНТЫ МОДАЛОК ДЛЯ МОБИЛЬНЫХ
+     ========================================== */
+
+
+  /* Подмодалка Б: CLEAN (Чистая карточка без размытия, постер идет отдельно) */
+  .modal-clean .show-modal-panel {
+    text-align: left;
     padding: 2rem 1.25rem;
-    position: relative;
-    overflow: hidden;
-    background-color: var(--surface, #1e1e1e);
+    background: var(--surface, #1e1e1e);
+  }
+  .modal-clean .sm-main {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .modal-clean .sm-poster {
+    display: block !important;
+    width: 100px;
+    height: 135px;
   }
 
-  .show-modal-panel::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(to top, var(--surface) 0%, transparent 65%),
-      linear-gradient(to bottom, var(--surface) 0%, transparent 65%),
-      linear-gradient(color-mix(in srgb, var(--surface) 85%, transparent), color-mix(in srgb, var(--surface) 70%, transparent)),
-      var(--modal-img, none);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    filter: blur(10px);
-    z-index: 0;
-    pointer-events: none;
-  }
 
-  .show-modal-panel > *:not(.show-modal-close) {
-    position: relative;
-    z-index: 1;
-  }
-
+  /* Общие элементы мобильной модалки */
   .show-modal-close {
     position: absolute !important;
     top: 1.25rem;
-    right: 1.25rem;
+    right: 1rem;
     z-index: 10;
   }
-
-
+  .show-share-trigger {
+    position: absolute !important;
+    bottom: 3.25rem;
+    right: 1rem;
+    z-index: 10;
+  }
   .sm-main {
-    flex-direction: column;
-    align-items: center;
+    margin-top: 1rem;
   }
-  .sm-poster {
-    display: none !important; 
-  }
-  .sm-info {
-    text-align: center;
-  }
-  .sm-title {
-    font-size: 1.35rem;
-  }
-  .sm-date {
-    font-size: 1.6rem;
-  }
+  .sm-title { font-size: 1.35rem; }
+  .sm-date { font-size: 1.6rem; }
   .sm-actions {
     justify-content: center;
     flex-direction: column;
@@ -310,4 +306,3 @@
     text-align: center;
   }
 }
-
