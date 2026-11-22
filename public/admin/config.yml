@@ -1,15 +1,16 @@
-# Конфигурация Decap CMS — панель управления для клиента
+# Конфигурация Decap CMS — панель управления
 # Документация: https://decapcms.org/docs/intro/
 
 backend:
   name: github
   repo: Bubnov-Roma/latido-trio
   branch: main
+  base_url: https://latido-trio.netlify.app
 
 locale: ru
 
 media_folder: public/uploads
-public_folder: /uploads
+public_folder: /latido-trio/uploads
 
 collections:
   - name: shows
@@ -59,16 +60,16 @@ collections:
       - { label: "Обложка", name: cover, widget: image, required: false }
       - { label: "Текст", name: body, widget: markdown }
 
-  # Документы (техрайдер и пр.) — просто загрузка файлов в public/docs
   - name: docs
     label: 📎 Документы (техрайдер и пр.)
     files:
       - name: rider
         label: "Техрайдер"
-        file: "public/docs/rider.md"   # через files-коллекцию можно править и текст документа
+        file: "public/docs/rider.md"
         fields:
           - { label: "Название", name: title, widget: string }
           - { label: "Содержимое / ссылка на PDF", name: body, widget: markdown }
+
   - name: 'members'
     label: 'Состав'
     folder: 'src/content/members'
@@ -81,6 +82,7 @@ collections:
       - { label: 'Текст', name: 'body', widget: 'markdown' }
       - { label: 'Цитата', name: 'quote', widget: 'string', required: false }
       - { label: 'Фото для главной', name: 'photoHome', widget: 'image', required: false }
+
   - name: contacts
     label: 📞 Контакты (страница)
     files:
@@ -97,3 +99,13 @@ collections:
           - { label: "Пресс-кит (ссылка)", name: pressKitUrl, widget: string, required: false }
           - { label: "Коммерческое предложение (ссылка)", name: offerUrl, widget: string, required: false }
           - { label: "Фото справа", name: photo, widget: image, required: false }
+
+  - name: tracks
+    label: 🎵 Треки
+    folder: src/content/tracks
+    create: true
+    fields:
+      - { label: "Название", name: title, widget: string }
+      - { label: "Порядок", name: order, widget: number, value_type: int }
+      - { label: "Аудиофайл", name: audioFile, widget: string }
+      - { label: "Обложка", name: cover, widget: object, required: false, fields: [{label: "Src", name: src, widget: string}]}
