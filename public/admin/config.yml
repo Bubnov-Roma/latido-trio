@@ -5,7 +5,7 @@ backend:
   name: github
   repo: Bubnov-Roma/latido-trio
   branch: main
-  base_url: 57a0ece9-f0d4-4b30-a1f3-ec31ccad042a
+  site_id: "57a0ece9-f0d4-4b30-a1f3-ec31ccad042a"
 
 locale: ru
 
