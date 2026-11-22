@@ -5,7 +5,7 @@ backend:
   name: github
   repo: Bubnov-Roma/latido-trio
   branch: main
-  site_id: "57a0ece9-f0d4-4b30-a1f3-ec31ccad042a"
+  base_url: "https://wandering-boat-ce4f.kilkun.workers.dev"
 
 locale: ru
 
